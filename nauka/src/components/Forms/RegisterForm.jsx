@@ -2,26 +2,31 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import axios from "axios";
+import { useState } from "react";
+
 
 const yupSchema = yup.object().shape({
     username: yup.string().required("Pole username jest wymagane"),
     email: yup.string().email("Pole email jest wymagane"),
     password: yup
-    .string()
-    .required("Pole hasło jest wymagane")
-    .min(12, "minimum 12 znaków"),
+        .string()
+        .required("Pole hasło jest wymagane")
+        .min(12, "minimum 12 znaków"),
     confirmPassword: yup
-    .string()
-    .required("Pole hasło jest wymagane")
-    .oneOf([yup.ref("password")], "Hasła się nie zgadzają")
+        .string()
+        .required("Pole hasło jest wymagane")
+        .oneOf([yup.ref("password")], "Hasła się nie zgadzają")
 })
 
 export default function RegisterForm() {
+    const [apiError, setApiError] = useState(null);
+    const [succes, setSuccess] = useState(null);
+    const [isFormSubmitting, setIsFormSubmitting] = useState(false);
     const {
         register,
         handleSubmit,
         watch,
-        formState: { errors },
+        formState: { errors, isSubmitting },
     } = useForm({
         resolver: yupResolver(yupSchema)
     })
@@ -29,18 +34,26 @@ export default function RegisterForm() {
     const password = watch("password");
 
     const onSubmit = async (data) => {
+        setApiError(null);
+        setSuccess(null);
+        setIsFormSubmitting(true);
         try {
-            const response = await axios.post("https://fakestoreapi.com/auth.login", data)
-            console.log(response);
+            const response = await axios.post("https://fakestoreapi.com/auth/login", data)
+            if (response) {
+                setSuccess(true);
+            }
+            setIsFormSubmitting(false)
 
         } catch (e) {
-            console.log(e);
+           console.log(e);
         }
     };
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-10">
             <h1>Rejestracja</h1>
+            {apiError && <span>{apiError}</span>}
+            {succes && <span>Sukces</span>}
 
             <div className="flex flex-col">
                 <label>Username</label>
@@ -98,7 +111,7 @@ export default function RegisterForm() {
                 )}
             </div>
 
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting || isFormSubmitting}>
                 Zarejestruj się
             </button>
         </form>
