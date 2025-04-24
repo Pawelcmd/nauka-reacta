@@ -1,4 +1,20 @@
 import { useForm } from "react-hook-form";
+import * as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup"
+import axios from "axios";
+
+const yupSchema = yup.object().shape({
+    username: yup.string().required("Pole username jest wymagane"),
+    email: yup.string().email("Pole email jest wymagane"),
+    password: yup
+    .string()
+    .required("Pole hasło jest wymagane")
+    .min(12, "minimum 12 znaków"),
+    confirmPassword: yup
+    .string()
+    .required("Pole hasło jest wymagane")
+    .oneOf([yup.ref("password")], "Hasła się nie zgadzają")
+})
 
 export default function RegisterForm() {
     const {
@@ -6,12 +22,20 @@ export default function RegisterForm() {
         handleSubmit,
         watch,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+        resolver: yupResolver(yupSchema)
+    })
 
     const password = watch("password");
 
     const onSubmit = async (data) => {
-        console.log("Dane formularza:", data);
+        try {
+            const response = await axios.post("https://fakestoreapi.com/auth.login", data)
+            console.log(response);
+
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     return (
@@ -22,7 +46,7 @@ export default function RegisterForm() {
                 <label>Username</label>
                 <input
                     autoFocus
-                    {...register("username", { required: "Username jest wymagany" })}
+                    {...register("username")}
                     className={errors.username ? "border-red-500" : "border-gray-500"}
                 />
                 {errors.username && (
@@ -34,7 +58,7 @@ export default function RegisterForm() {
                 <label>E-mail</label>
                 <input
                     type="email"
-                    {...register("email", { required: "Email jest wymagany" })}
+                    {...register("email")}
                     className={errors.email ? "border-red-500" : "border-gray-500"}
                 />
                 {errors.email && (
@@ -47,7 +71,6 @@ export default function RegisterForm() {
                 <input
                     type="password"
                     {...register("password", {
-                        required: "Hasło jest wymagane", 
                         minLength: {
                             value: 12,
                             message: "Hasło musi mieć co najmniej 12 znaków",
@@ -65,7 +88,6 @@ export default function RegisterForm() {
                 <input
                     type="password"
                     {...register("confirmPassword", {
-                        required: "Powtórzenie hasła jest wymagane",
                         validate: (value) =>
                             value === password || "Hasła się nie zgadzają",
                     })}
