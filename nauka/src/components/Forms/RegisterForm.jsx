@@ -37,17 +37,25 @@ export default function RegisterForm() {
         setApiError(null);
         setSuccess(null);
         setIsFormSubmitting(true);
+    
         try {
-            const response = await axios.post("https://fakestoreapi.com/auth/login", data)
-            if (response) {
+            const response = await axios.post("https://fakestoreapi.com/users", data);
+            
+            if (response.status === 200 || response.status === 201) {
                 setSuccess(true);
+            } else {
+                setApiError("Wystąpił nieoczekiwany błąd.");
             }
-            setIsFormSubmitting(false)
-
         } catch (e) {
-           console.log(e);
+            if (e.response?.status === 400) {
+                setApiError("Błędne dane rejestracji.");
+            } else {
+                setApiError("Wystąpił błąd przy rejestracji.");
+            }
+        } finally {
+            setIsFormSubmitting(false);
         }
-    };
+    };    
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-10">
