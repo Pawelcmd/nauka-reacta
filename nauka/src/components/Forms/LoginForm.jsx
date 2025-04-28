@@ -3,6 +3,8 @@ import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const yupSchema = yup.object().shape({
     username: yup.string().required("Pole username jest wymagane"),
@@ -10,6 +12,8 @@ const yupSchema = yup.object().shape({
 })
 
 export default function LoginForm() {
+    const location = useLocation();
+    const registered = location.state?.registered;
     const [apiError, setApiError] = useState(null);
     const [succes, setSuccess] = useState(null);
     const [ isFormSubmitting, setIsFormSubmitting] = useState(false);
@@ -20,15 +24,17 @@ export default function LoginForm() {
     } = useForm({
         resolver: yupResolver(yupSchema)
     })
-
+    const navigate = useNavigate();
     const onSubmit = async (data) => {
         setApiError(null);
         setSuccess(null);
         setIsFormSubmitting(true);
         try {
             const response = await axios.post("https://fakestoreapi.com/auth/login", data)
-            if (response) {
+            if (response.data?.token) {
                 setSuccess(true);
+                localStorage.setItem("authToken", response.data.token);
+                navigate('/products');
             }
             setIsFormSubmitting(false)
         } catch (e) {
@@ -46,6 +52,7 @@ export default function LoginForm() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-10">
             <h1>Logowanie</h1>
+            {registered && <span className="text-green-500">Rejestracja zakończona pomyślnie!</span>}
             {apiError && <span>{apiError}</span>}
             {succes && <span>Sukces</span>}
             <div className="flex flex-col">

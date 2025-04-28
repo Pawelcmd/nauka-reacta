@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
+    "@tailwindcss/vite": "^4.1.4",
     "axios": "^1.8.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.1",
+    "react-router-dom": "^6.30.0",
+    "swr": "^2.3.3",
     "yup": "^1.6.1"
   },
   "devDependencies": {
