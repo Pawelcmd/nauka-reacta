@@ -16,14 +16,23 @@ export default function LoginForm() {
     const registered = location.state?.registered;
     const [apiError, setApiError] = useState(null);
     const [succes, setSuccess] = useState(null);
-    const [ isFormSubmitting, setIsFormSubmitting] = useState(false);
+    const [isFormSubmitting, setIsFormSubmitting] = useState(false);
+    const rememberedUsername = localStorage.getItem("rememberedUsername") || "";
+    const rememberedPassword = localStorage.getItem("rememberedPassword") || "";
+
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm({
-        resolver: yupResolver(yupSchema)
-    })
+        resolver: yupResolver(yupSchema),
+        defaultValues: {
+            username: rememberedUsername,
+            password: rememberedPassword,
+            remember: rememberedUsername && rememberedPassword ? true : false
+        }
+    });
+
     const navigate = useNavigate();
     const onSubmit = async (data) => {
         setApiError(null);
@@ -34,15 +43,25 @@ export default function LoginForm() {
             if (response.data?.token) {
                 setSuccess(true);
                 localStorage.setItem("authToken", response.data.token);
+            
+                if (data.remember) {
+                    localStorage.setItem("rememberedUsername", data.username);
+                    localStorage.setItem("rememberedPassword", data.password);
+                } else {
+                    localStorage.removeItem("rememberedUsername");
+                    localStorage.removeItem("rememberedPassword");
+                }
+            
                 navigate('/products');
             }
+            
             setIsFormSubmitting(false)
         } catch (e) {
             if (e.status === 401) {
                 setApiError(
                     "dane logowania są niepoprawne"
                 )
-            }else {
+            } else {
                 setApiError("wystąpił błąd")
             }
             setIsFormSubmitting(false)
@@ -52,7 +71,7 @@ export default function LoginForm() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-10">
             <h1>Logowanie</h1>
-            {registered && <span className="text-green-500">Rejestracja zakończona pomyślnie!</span>}
+            {registered && <span className="text-green-500">Rejestracja zakończona pomyślnie!</span>}<br/>
             {apiError && <span>{apiError}</span>}
             {succes && <span>Sukces</span>}
             <div className="flex flex-col">
@@ -77,6 +96,11 @@ export default function LoginForm() {
                     <span className="text-red-500">{errors.password.message} </span>
                 )}
             </div>
+            <div className="flex items-center">
+                <input type="checkbox" id="remember" {...register("remember")} />
+                <label htmlFor="remember" className="ml-2">Zapamiętaj mnie</label>
+            </div>
+
             <button type="submit" className="btn btn-primary" disabled={isSubmitting || isFormSubmitting}>Zaloguj się</button>
         </form>
     )

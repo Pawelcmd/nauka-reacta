@@ -6,18 +6,25 @@ import ProductsPage from './routes/Products'
 import RegisterPage from './routes/Register';
 import ProductDetails from './routes/ProductDetails';
 import MainLayout from './components/layouts/MainLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<MainLayout/>}/>
-        <Route index element={<HomePage/>} />
+        <Route path='/' element={<MainLayout />} />
+        <Route index element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/products/:id"
+          element={
+            <ProtectedRoute>
+              <ProductDetails />
+            </ProtectedRoute>}
+        />
+        <Route path="/login" element={<LoginPage/>}/>
+        <Route path="register" element={<RegisterPage/>}/>
       </Routes>
     </BrowserRouter>
   )

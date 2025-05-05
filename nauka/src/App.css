@@ -9,3 +9,13 @@
 input {
   border: 1px solid #fff;
 }
+
+body.dark {
+  background-color: #121212;
+  color: white;
+}
+
+body, .btn-primary, .btn-secondary {
+  background-color: #ffffff;
+  color: black;
+}

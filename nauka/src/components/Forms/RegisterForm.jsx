@@ -38,10 +38,6 @@ export default function RegisterForm() {
             const response = await axios.post("https://fakestoreapi.com/users", data);
 
             if (response.status === 200 || response.status === 201) {
-                // Zapisz token po rejestracji w localStorage
-                const token = "example_token"; // Przy założeniu, że API zwraca token
-                localStorage.setItem("authToken", token);
-                
                 setSuccess(true);
                 navigate("/login", { state: { registered: true } });
             } else {
