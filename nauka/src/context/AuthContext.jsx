@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect } from "react";
+import { createContext, useReducer, useEffect, useCallback } from "react";
 import { authReducer, initialState } from "../reducers/AuthReducer";
 import { AUTH_ACTIONS } from "../reducers/AuthReducer";
 
@@ -22,20 +22,20 @@ export const AuthProvider = ({children}) => {
         }
     }, [])
 
-    const login = (user, token) => {
+    const login = useCallback((user, token) => {
         localStorage.setItem("authToken", token);
         localStorage.setItem("userData", JSON.stringify(user));
         dispatch({
             type: AUTH_ACTIONS.LOGIN_SUCCESS,
             payload: user
         });
-    };
+    }, [dispatch]);
     
-    const logout = () => {
+    const logout = useCallback(() => {
         localStorage.removeItem("authToken");
         localStorage.removeItem("userData");
         dispatch({ type: AUTH_ACTIONS.LOGOUT });
-    };
+    }, [dispatch]);    
     
 
     return (

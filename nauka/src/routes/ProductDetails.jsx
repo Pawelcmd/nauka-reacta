@@ -1,12 +1,8 @@
-import useSWR from 'swr';
+import useProductDetails from '../hooks/useProductDetails';
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-const ProductDetails = ({ id }) => {
-    const { data, error, isLoading } = useSWR(
-        `https://fakestoreapi.com/products/${id}`,
-        fetcher
-    );
+const ProductDetails = () => {
+    const { data, error, isLoading } = useProductDetails();
 
     if (isLoading) return <span>Trwa pobieranie...</span>;
     if (error) return <span>Błąd przy ładowaniu produktu</span>;

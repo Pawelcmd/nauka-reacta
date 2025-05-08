@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -15,7 +16,28 @@ body.dark {
   color: white;
 }
 
-body, .btn-primary, .btn-secondary {
+body,
+.btn-primary,
+.btn-secondary {
   background-color: #ffffff;
   color: black;
+}
+
+.container {
+  position: relative
+}
+
+select {
+  background: #fff;
+  cursor: pointer;
+}
+
+.btn-danger {
+  background: #fff;
+  border: 1px solid #000;
+}
+
+input {
+  background: #fff;
+  color: #000;
 }
