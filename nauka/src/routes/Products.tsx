@@ -3,24 +3,29 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { FaShoppingCart, FaSun, FaMoon } from 'react-icons/fa';
 import useProducts from '../hooks/useProducts';
 import useDebounce from '../hooks/useDebounce';
+import Product from '@/types/product';
+
+type SortOption = '' | 'price_asc' | 'price_desc';
+type CartItem = Product & { quantity: number };
+
 
 const ProductsPage = () => {
     const navigate = useNavigate();
 
-    const [cart, setCart] = useState(() => {
+    const [cart, setCart] = useState<CartItem[]>(() => {
         const storedCart = localStorage.getItem('cart');
         return storedCart ? JSON.parse(storedCart) : [];
     });
-    const [showCart, setShowCart] = useState(false);
-    const [darkMode, setDarkMode] = useState(() => {
+    const [showCart, setShowCart] = useState<boolean>(false);
+    const [darkMode, setDarkMode] = useState<boolean>(() => {
         const storedMode = localStorage.getItem('darkMode');
         return storedMode ? JSON.parse(storedMode) : false;
     });
-    const [sortState, setSortState] = useState('none');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [minPrice, setMinPrice] = useState('');
-    const [maxPrice, setMaxPrice] = useState('');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [sortState, setSortState] = useState<SortOption>('');
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [minPrice, setMinPrice] = useState<string>('');
+    const [maxPrice, setMaxPrice] = useState<string>('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
     const token = localStorage.getItem('authToken');
@@ -29,7 +34,7 @@ const ProductsPage = () => {
         maxPrice,
         selectedCategory,
         searchQuery: debouncedSearchQuery,
-        sortState
+        sortState,
     });
 
     const handleLogout = () => {
@@ -39,7 +44,7 @@ const ProductsPage = () => {
         navigate('/login');
     };
 
-    const addToCart = useCallback((product) => {
+    const addToCart = useCallback((product: Product) => {
         setCart((prevCart) => {
             const productExists = prevCart.find(item => item.id === product.id);
             if (productExists) {
@@ -54,7 +59,7 @@ const ProductsPage = () => {
         });
     }, []);
 
-    const removeFromCart = useCallback((indexToRemove) => {
+    const removeFromCart = useCallback((indexToRemove: number) => {
         setCart((prevCart) => {
             const updatedCart = prevCart.filter((_, index) => index !== indexToRemove);
             localStorage.setItem('cart', JSON.stringify(updatedCart));
@@ -80,7 +85,8 @@ const ProductsPage = () => {
 
     const uniqueCategories = useMemo(() => {
         if (!data) return [];
-        const categories = data.map(product => product.category);
+        const products = data as Product[];
+        const categories = products.map(product => product.category);
         return [''].concat([...new Set(categories)]);
     }, [data]);
 
@@ -140,12 +146,10 @@ const ProductsPage = () => {
             <div className="my-4">
                 <label htmlFor="sort" className="mr-2">Sortuj:</label>
                 <select
-                    id="sort"
                     value={sortState}
-                    onChange={(e) => setSortState(e.target.value)}
-                    className="border px-2 py-1 rounded text-black"
+                    onChange={(e) => setSortState(e.target.value as 'price_asc' | 'price_desc' | '')}
                 >
-                    <option value="none">Brak sortowania</option>
+                    <option value="">Brak sortowania</option>
                     <option value="price_asc">Cena rosnąco</option>
                     <option value="price_desc">Cena malejąco</option>
                 </select>
@@ -272,7 +276,7 @@ const ProductsPage = () => {
             )}
 
             <div className="products-grid">
-                {data.map((product) => (
+                {data.map((product: { id: any; title?: any; description?: any; price?: any; image?: any; }) => (
                     <div key={product.id} className="product-card">
                         <h2>{product.title}</h2>
                         <p>{product.description}</p>

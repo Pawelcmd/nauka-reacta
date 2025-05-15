@@ -8,7 +8,7 @@ import MainLayout from './components/layouts/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { lazy, Suspense } from 'react';
 
-const ProductsPage = lazy(() => import('./routes/Products'));
+const ProductsPage = lazy(() => import('./routes/Products.tsx'));
 
 function App() {
   return (
