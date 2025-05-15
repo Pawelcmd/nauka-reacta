@@ -6,7 +6,7 @@ const ProductCard = ({ product }: { product: Product }) => {
     const { cartItems, addToCart, removeFromCart } = useCart();
 
     const isInCart = cartItems.some((item: Product) => item?.id === product?.id);
-    
+
     const handleCartAction = () => {
         if (isInCart) {
             removeFromCart(product.id);
@@ -21,6 +21,9 @@ const ProductCard = ({ product }: { product: Product }) => {
                 <p>{product.price.toFixed(2)}zł</p>
             </Link>
             <span>{product.category}</span>
+            <button onClick={handleCartAction}>
+                {isInCart ? "Usuń z koszyka" : "Dodaj do koszyka"}
+            </button>
         </>
     )
 }

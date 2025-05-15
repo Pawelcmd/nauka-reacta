@@ -13,7 +13,7 @@ const LoginPage = () => {
     if (token) {
       navigate("/products");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <>
